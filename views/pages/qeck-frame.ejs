@@ -1,0 +1,201 @@
+<style>
+    *{
+        transition: 0.3s;
+        margin: 0 auto;
+        font-family: monospace;
+    }
+    body{
+        color: rgb(0, 0, 0);
+        background-color: #1d1d1d;
+        padding: 10px;
+        width: -webkit-fill-available;
+        height: calc(100vh - 80px);
+    }
+    #typing-section{
+        background-color: #49474780;
+        padding: 10px 0;
+        margin: -10px;
+        display: flex;
+        position: absolute;
+        width: 100%;
+        bottom: 10px;
+
+    }
+    #typing-input{
+        resize: none;
+        padding: 5px;
+        margin: 0 5px;
+        border-radius: 10px;
+        background-color: #0000004d;
+        outline: none;
+        border: none;
+        width: 65%;
+        margin-left: 15px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.729);
+    }
+    #send-btn{
+        content: url('/public/src/send.svg');
+        padding: 5px;
+        border-radius: 50%;
+        background-color: blueviolet;
+        width: 28px;
+        height: 27px;
+        position: absolute;
+        right: 15px;
+    }
+    #send-btn:hover{
+        background-color: rgb(107, 33, 175);
+    }
+    #msgs-section{
+        width: inherit;
+        height: inherit;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+    .msg-wrapper{
+        background-color: #ffffff47;
+        border-radius: 8px;
+        padding: 5px;
+        margin-block: 5px;
+    }
+
+    .username{
+        color: #d4a7fe;
+        border-bottom: 2px solid #00000052;
+    }
+    .msg{
+        color: #ffffffd1;
+        padding-top: 10px;
+    }
+    ::-webkit-scrollbar{
+        width: 5px;
+    }
+    ::-webkit-scrollbar-track{
+        background-color: rgba(0, 0, 0, 0.212);
+    }
+    ::-webkit-scrollbar-thumb{
+        background-color: rgba(255, 255, 255, 0.349);
+        border-radius: 20px;
+    }
+    
+    
+
+</style>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+</script>
+
+<body>
+    
+    <section id="msgs-section">
+        
+
+    </section>
+
+    <section id="typing-section">
+        <textarea name="typing" id="typing-input" autocomplete="off" placeholder="Type..."></textarea>
+
+        <i id="send-btn"></i>
+        
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        var user = '<%= user %>'
+        var msgs_number = document.getElementsByClassName("msg").length;
+        const send_btn = document.getElementById('send-btn');
+        
+        socket.on('connect', (msg)=>{
+            socket.emit('user joined', {msg:`${user} has joined`, user: user});
+        })
+        
+        socket.on('user left', (user)=>{
+            if(user != null || user != undefined){
+            var msg = `${user} has left`;
+           createNote(msg)
+        }
+        })
+       
+        socket.on('joined msg', (msg)=>{
+            createNote(msg);
+        })
+        
+send_btn.onclick = ()=>{
+if (!(isNullOrWhiteSpace(document.getElementById('typing-input').value.trim()))) {
+   socket.emit('send msg', {user: user, msg:  document.getElementById('typing-input').value.trim()})
+    
+    document.getElementById('typing-input').value = '';
+}
+}
+socket.on('msg', (info)=>{
+    const msg_wrapper = document.createElement('div');
+    const username = document.createElement('p');
+    const msg = document.createElement('p');
+    msg_wrapper.classList.add('msg-wrapper');
+    username.classList.add('username');
+    msg.classList.add('msg');
+    username.innerHTML = info.user;
+    msg.innerHTML = info.msg;
+
+    document.getElementById('msgs-section').appendChild(msg_wrapper);
+    msg_wrapper.appendChild(username);
+    msg_wrapper.appendChild(msg);
+})
+
+
+
+
+
+function isNullOrWhiteSpace(str) {
+  return (!str || str.length === 0 || /^\s*$/.test(str))
+}
+
+function createNote(msg){
+    const note = document.createElement('div');
+    note.innerHTML = msg;
+    
+    note.style.textAlign = "center";
+    note.style.margin = "2px auto";
+    note.style.padding = "0 5px";
+    note.style.color = "rgb(255,255,255, 0.4)";
+    note.style.fontFamily = "monospace";
+    note.style.fontSize = "12px";
+    document.getElementById('msgs-section').appendChild(note);
+}
+
+
+
+
+autoScroll()
+setInterval(()=>{
+    if(msgs_number < document.getElementsByClassName("msg").length || msgs_number > document.getElementsByClassName("msg").length){
+
+        autoScroll()
+        msgs_number = document.getElementsByClassName("msg").length
+
+    }
+})
+
+function autoScroll(){
+    document.getElementById("msgs-section").scrollTo(0,document.getElementById("msgs-section").scrollHeight);
+}
+    </script>
+</body>

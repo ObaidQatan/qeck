@@ -1,0 +1,882 @@
+<style>
+#app-icon{
+    content: url('/public/src/face.svg');
+
+    height: 0px; width: 0px; margin: -30px 5px; padding: 5px; border-radius: 50%; background-color: rgb(0 0 0 / 12%);
+}
+#hi-text, #enter-text, #h{
+    font-weight: 400;
+    font-size: 0px;
+}
+#hi-text{
+    margin-top: 70px;
+}
+#enter-text{
+    margin-top: 20px;
+}
+#username-input{
+    height: 30px;
+    width: 70%;
+    max-width: 300px;
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 5px;
+    color: rgba(0, 0, 0, 0.459);
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: bold;
+    letter-spacing: 2px;
+    opacity: 0;
+    outline: none;
+}
+.proceed-section{
+    background-color: white;
+    border-radius: 20px;
+    height: 50%;
+    padding: 10px;
+    transform: translateY(1000%);
+    display: none;
+}
+.proceed-btn{
+    border: none;
+    border-radius: 10px;
+    padding-block: 10px;
+    /* width: 70%; */
+    width: 100%;
+    max-width: 180px;
+    color: white;
+    background-color: royalblue;
+    font-family: monospace;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+.proceed-btn:hover{
+    background-color: rgb(48, 78, 170);
+}
+.light-span{
+    padding-block: 10px;
+    /* width: 70%; */
+    width: 80px;
+    max-width: 180px;
+    background-image: linear-gradient(to left, transparent, rgb(255 255 255 / 20%), transparent);
+    position: absolute;
+    height: 15px;
+    transition: 0.8s;
+    left: -10%;
+}
+.light{
+    width: 70%;
+    overflow: hidden;
+    position: relative;
+}
+.qeck-options{
+    border-radius: 5px;
+    padding-block: 5px;
+    width: 0px;
+    height: 0px;
+    max-width: 180px;
+    color: white;
+    background-color: royalblue;
+    font-family: monospace;
+    letter-spacing: 2px;
+    font-weight: 520;
+    border: none;
+    font-size: 10px;
+    margin-block: 10px;
+    overflow: hidden;
+    opacity: 0;
+}
+.qeck-options:hover{
+    background-color: rgb(48, 78, 170);
+}
+#qeck-options-wrapper{
+    display: flex;
+    flex-direction: column;
+    transform: translateY(-80px);
+}
+.join-link-input{
+    height: 0px;
+    width: 0px;
+    max-width: 300px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px auto;
+    color: rgba(0, 0, 0, 0.459);
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: bold;
+    opacity: 0;
+    outline: none;
+}
+.create-secret-input{
+    height: 0px;
+    width: 0px;
+    max-width: 300px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px auto;
+    color: rgba(0, 0, 0, 0.459);
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: bold;
+    opacity: 0;
+    outline: none;
+    overflow: hidden;
+}
+.go-btn{
+    content: url('/public/src/rocket.svg');
+    background-image: linear-gradient(205deg, rgba(255, 255, 255, 0.226), transparent);
+    border-radius: 50%;
+    padding: 5px;
+    margin: 10px auto;
+    width: 0px;
+    height:0px;
+    opacity: 0;
+}
+.go-btn:hover{
+    background-color: rgba(255, 255, 255, 0.226);
+    width: 45px;
+    height: 45px;
+}
+.continue-btn{
+    border-radius: 5px;
+    padding-block: 5px;
+    width: 0px;
+    height: 0px;
+    max-width: 180px;
+    color: white;
+    background-color: royalblue;
+    font-family: monospace;
+    letter-spacing: 2px;
+    font-weight: 520;
+    border: none;
+    font-size: 10px;
+    margin-block: 10px;
+    overflow: hidden;
+    opacity: 0;
+}
+</style>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+</script>
+
+<body id="app-body-body" style="color: white; font-family: monospace;">
+
+
+     
+    <section id="notif-section" style="background-color: rgb(255 255 255);height: 40px;border-radius: 10px;padding: 5px;width: 80%;transform: translateY(-100%);display: flex;overflow: hidden;">
+
+    </section>
+
+    <section id="cover">
+
+    </section>
+
+
+
+
+    
+<i id="app-icon"></i>
+<p id="hi-text">Hi <p id="h"> :)</p></p><p id="enter-text">Enter your name</p>
+<input type="text" id="username-input" autocomplete="off" spellcheck="false" name="username" placeholder="This name will be public">
+
+<%# <article class="proceed-section">
+    <div style="width: 70%; overflow: hidden; position: relative;">
+        <span id="light" class="light"></span>
+        <button class="proceed-btn">Proceed</button>
+    </div>
+</article> %> 
+
+<article id="qeck-options-wrapper">
+
+
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+     
+   
+    const app_icon = document.getElementById('app-icon');
+    const app_body = document.getElementById('app-body');
+    const hi_txt = document.getElementById('hi-text');
+    const enter_txt = document.getElementById('enter-text');
+    const username_input = document.getElementById('username-input');
+    const h = document.getElementById('h');
+
+    var username;
+    var option;
+    var join_link;
+    var secret;
+    
+
+
+
+    setTimeout(()=>{
+        app_icon.style.height = '120px';
+        app_icon.style.width = '120px';
+
+        setTimeout(()=>{
+        app_icon.style.height = '80px';
+        app_icon.style.width = '80px';
+    }, 400)
+    }, 100)
+
+    setTimeout(()=>{
+        hi_txt.style.fontSize = '32px';
+        // hi_txt.style.marginTop = '50px';
+
+        setTimeout(()=>{
+        hi_txt.style.fontSize = '25px';
+
+        setTimeout(()=>{
+        hi_txt.style.marginTop = '50px';
+
+        setTimeout(()=>{
+        enter_txt.style.fontSize = '18px';
+
+        setTimeout(()=>{
+        enter_txt.style.fontSize = '13px';
+
+        setTimeout(()=>{
+        username_input.style.opacity = '1';
+
+    },100)
+    },400)
+    },400)
+    },800)
+        
+    },400)
+    },800)
+
+    
+username_input.addEventListener("input", ()=>{
+    validateUsername()
+})
+
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+
+
+function validateUsername(){
+    var temp = document.getElementById('username-input').value.trim();
+    if (isNullOrWhiteSpace(temp) || temp.length < 3) {
+        console.log('not valid')
+        if(document.getElementById("proceed-section")){
+            const proceed_section = document.getElementById("proceed-section");
+            const proceed_btn = document.getElementById("proceed-section");
+            proceed_btn.onclick = ()=>{
+            
+            }
+            proceed_btn.disabled = true;
+
+            proceed_section.style.transform = "translateY(1000%)";
+            setTimeout(()=>{
+            document.getElementById("app-body").removeChild(proceed_section);
+            
+        },100)
+            
+        }
+    } else {
+        console.log('valid')
+        if (!(document.getElementById("proceed-section"))) {
+        const proceed_section = document.createElement('article');
+        const proceed_btn = document.createElement('button');
+        const light = document.createElement('div');
+        const light_span = document.createElement('span');
+        proceed_section.classList.add("proceed-section")
+        light_span.classList.add("light-span");
+        light.classList.add("light")
+        proceed_btn.classList.add("proceed-btn")
+
+        proceed_btn.setAttribute("id", "proceed-btn");
+        proceed_section.setAttribute("id", "proceed-section");
+        light.setAttribute("id", "light");
+        light_span.setAttribute("id", "light-span");
+        proceed_btn.innerHTML = "Proceed";
+        document.getElementById("app-body").appendChild(proceed_section);
+        document.getElementById("proceed-section").appendChild(light);
+        document.getElementById("light").appendChild(proceed_btn);
+        document.getElementById("light").appendChild(light_span);
+        proceed_section.style.display = "block";
+
+        setTimeout(()=>{
+            proceed_section.style.transform = "translateY(20%)";
+
+            setTimeout(()=>{
+            light_span.style.left = "100%";
+        },400)
+        },100)
+
+        proceed_btn.onclick = ()=>{
+            proceedUsername();
+            username = document.getElementById('username-input').value.trim();
+            // socket.emit('username', username);                                     //SOCKET--******
+
+            setTimeout(()=>{
+            proceed_section.style.transform = "translateY(10%)";
+
+            setTimeout(()=>{
+                proceed_section.style.transform = "translateY(1000%)";
+
+                setTimeout(()=>{
+                username_input.style.transform = "translateY(2000%)";
+                setTimeout(()=>{
+                enter_txt.style.transform = "translateY(2000%)";
+                setTimeout(()=>{
+                hi_txt.style.transform = "translateY(2000%)";
+
+                setTimeout(()=>{
+                //TODO: Create options
+                const join_btn = document.createElement('button');
+                join_btn.classList.add('qeck-options');
+                const create_btn = document.createElement('button');
+                create_btn.classList.add('qeck-options');
+                const public_btn = document.createElement('button');
+                public_btn.classList.add('qeck-options');
+                join_btn.setAttribute("id", "join-btn");
+                create_btn.setAttribute("id", "create-btn");
+                public_btn.setAttribute("id", "public-btn");
+                join_btn.innerHTML = "Join Qeck";
+                create_btn.innerHTML = "Create Qeck";
+                public_btn.innerHTML = "Public Qeck";
+                document.getElementById("qeck-options-wrapper").appendChild(join_btn);
+                document.getElementById("qeck-options-wrapper").appendChild(create_btn);
+                document.getElementById("qeck-options-wrapper").appendChild(public_btn);
+
+                join_btn.onclick = ()=>{
+                    create_btn.disabled = true;
+                    public_btn.disabled = true;
+                    option = 'join';
+
+                    join_btn.style.transition = '1s';
+                    join_btn.style.backgroundColor = 'black';
+                    setTimeout(()=>{
+                        join_btn.style.transition = '0.3s';
+
+                        public_btn.style.transform = 'translateY(2000%)';
+                        setTimeout(()=>{
+                        create_btn.style.transform = 'translateY(2000%)';
+
+                        setTimeout(()=>{
+                            join_btn.style.transform = 'translateY(2000%)';
+
+                            setTimeout(()=>{
+                                appBodyAction(option);
+                            },400)
+                        },200)
+                    },200)
+                    },1000)
+                }
+
+                create_btn.onclick = ()=>{
+                    join_btn.disabled = true;
+                    public_btn.disabled = true;
+                    option = 'create';
+
+                    create_btn.style.transition = '1s';
+                    create_btn.style.backgroundColor = 'black';
+                    setTimeout(()=>{
+                        create_btn.style.transition = '0.3s';
+
+                        public_btn.style.transform = 'translateY(2000%)';
+                        setTimeout(()=>{
+                        create_btn.style.transform = 'translateY(2000%)';
+
+                        setTimeout(()=>{
+                            join_btn.style.transform = 'translateY(2000%)';
+
+                            setTimeout(()=>{
+                                appBodyAction(option);
+                            },400)
+                        },200)
+                    },200)
+                    },1000)
+                }
+
+                public_btn.onclick = ()=>{
+                    create_btn.disabled = true;
+                    join_btn.disabled = true;
+                    option = 'public';
+                    secret = 'public';
+                    join_link = 'qeck';
+
+                    public_btn.style.transition = '1s';
+                    public_btn.style.backgroundColor = 'black';
+                    setTimeout(()=>{
+                        public_btn.style.transition = '0.3s';
+
+                        public_btn.style.transform = 'translateY(2000%)';
+                        setTimeout(()=>{
+                        create_btn.style.transform = 'translateY(2000%)';
+
+                        setTimeout(()=>{
+                            join_btn.style.transform = 'translateY(2000%)';
+
+                            setTimeout(()=>{
+                                appBodyAction(option);
+                            },400)
+                        },200)
+                    },200)
+                    },1000)
+                }
+                setTimeout(()=>{
+                    join_btn.style.width = "50%";
+                    join_btn.style.height = "auto";
+                    join_btn.style.opacity = "1";
+                    setTimeout(()=>{
+                        create_btn.style.width = "50%";
+                        create_btn.style.height = "auto";
+                        create_btn.style.opacity = "1";
+                        setTimeout(()=>{
+                            public_btn.style.width = "50%";
+                            public_btn.style.height = "auto";
+                            public_btn.style.opacity = "1";
+               
+                        setTimeout(()=>{
+                        join_btn.style.fontSize = "13px";
+                        setTimeout(()=>{
+                        create_btn.style.fontSize = "13px";
+                        setTimeout(()=>{
+                        public_btn.style.fontSize = "13px";
+                },400)
+                },400)
+                },400)
+                },200)
+                },200)
+                },0)
+
+
+
+        },400)
+        },100)
+        },100)
+        },400)
+        },400)
+        },100)
+        }
+        
+        }
+       
+    }
+}
+
+
+function appBodyAction(choice){
+    const qeck_options_wrapper = document.getElementById("qeck-options-wrapper");
+    qeck_options_wrapper.removeChild(document.getElementById("join-btn"))
+    qeck_options_wrapper.removeChild(document.getElementById("create-btn"))
+    app_body.style.transition = '2s'
+    app_icon.style.transition = '2s'
+    app_body.style.backgroundColor = "black"
+    
+    app_icon.style.width = "120px";
+    app_icon.style.height = "120px";
+    app_icon.style.transform = "translateY(50%)";
+
+    setTimeout(()=>{
+        if (choice == 'join') {
+        joinAction();
+    } else if (choice == 'create'){
+        createAction();
+    }else{
+        publicAction();
+    }
+    },2000)
+    
+}
+
+
+function proceedUsername(){
+
+}
+
+function joinAction(){
+    const qeck_options_wrapper = document.getElementById("qeck-options-wrapper");
+    const join_link_input = document.createElement("input");
+    join_link_input.classList.add("join-link-input");
+    join_link_input.setAttribute("id", "join-link-input");
+    qeck_options_wrapper.appendChild(join_link_input);
+    join_link_input.style.opacity = '1';
+
+    setTimeout(()=>{
+        join_link_input.style.width = "70%";
+        setTimeout(()=>{
+        join_link_input.style.height = "30px";
+        join_link_input.placeholder = "Enter Qeck Link";
+        join_link_input.spellcheck = false;
+    },400);
+    },200);
+
+    join_link_input.addEventListener('input', ()=>{
+        var temp = document.getElementById('join-link-input').value.trim();
+    if (isNullOrWhiteSpace(temp) || temp.length < 3) {
+        if(document.getElementById("go-btn")){
+            const go_btn = document.getElementById("go-btn");
+            go_btn.onclick = ()=>{
+
+            }
+            go_btn.style.width = "55px";
+            go_btn.style.height = "55px";
+            setTimeout(()=>{
+                go_btn.style.width = "0";
+                go_btn.style.height = "0";
+                setTimeout(()=>{
+                qeck_options_wrapper.removeChild(go_btn);
+            },300)
+            },200)
+            
+        }
+    }else{
+        if(!document.getElementById("go-btn")){
+            const go_btn = document.createElement("i");
+            go_btn.classList.add("go-btn");
+            go_btn.setAttribute("id", "go-btn");
+            qeck_options_wrapper.appendChild(go_btn);
+
+            setTimeout(()=>{
+                go_btn.style.opacity = '1';
+                go_btn.style.width = '55px';
+                go_btn.style.height = '55px';
+                setTimeout(()=>{
+                go_btn.style.width = '45px';
+                go_btn.style.height = '45px';
+            },400)
+            },100)
+
+            go_btn.onclick = ()=>{
+                join_link = document.getElementById('join-link-input').value.trim();  //HERE##*****
+                notif("This feature will be added soon, please stay toned", 2000);
+            }
+}
+    }
+    })
+
+    
+}
+
+
+
+
+function createAction(){
+    const qeck_options_wrapper = document.getElementById("qeck-options-wrapper");
+    const create_secret_input = document.createElement("input");
+    create_secret_input.classList.add("create-secret-input");
+    create_secret_input.setAttribute("id", "create-secret-input");
+    qeck_options_wrapper.appendChild(create_secret_input);
+    create_secret_input.style.opacity = '1';
+
+    setTimeout(()=>{
+        create_secret_input.style.width = "70%";
+        setTimeout(()=>{
+        create_secret_input.style.height = "30px";
+        create_secret_input.placeholder = "Create Qeck Secret";
+        create_secret_input.spellcheck = false;
+    },400);
+    },200);
+
+    create_secret_input.addEventListener('input', ()=>{
+        var temp = document.getElementById('create-secret-input').value.trim();
+    if (isNullOrWhiteSpace(temp) || temp.length < 3) {
+        if(document.getElementById("continue-btn")){
+            const continue_btn = document.getElementById("continue-btn");
+            continue_btn.onclick = ()=>{
+
+            }
+            continue_btn.style.width = "100px";
+            continue_btn.style.height = "55px";
+            continue_btn.style.fontSize = "14px";
+            setTimeout(()=>{
+                continue_btn.style.width = "0";
+                continue_btn.style.height = "0";
+                continue_btn.style.fontSize = "0px";
+                setTimeout(()=>{
+                qeck_options_wrapper.removeChild(continue_btn);
+            },300)
+            },200)
+            
+        }
+    }else{
+        if(!document.getElementById("continue-btn")){
+            const continue_btn = document.createElement("button");
+            continue_btn.classList.add("continue-btn");
+            continue_btn.setAttribute("id", "continue-btn");
+            continue_btn.innerHTML = "Continue";
+            qeck_options_wrapper.appendChild(continue_btn);
+
+            setTimeout(()=>{
+                continue_btn.style.opacity = '1';
+                continue_btn.style.width = '55px';
+                continue_btn.style.height = '55px';
+                continue_btn.style.fontSize = "14px";
+                setTimeout(()=>{
+                continue_btn.style.width = '90px';
+                continue_btn.style.height = '45px';
+                continue_btn.style.fontSize = "12px";
+            },400)
+            },100)
+            var continueCount = 0;
+            var existCount = 0;
+
+            continue_btn.onclick = ()=>{
+                if (continueCount == 0) {
+                    continueCount++;
+                    secret = document.getElementById('create-secret-input').value.trim();
+                create_secret_input.style.fontSize = '0px';
+                setTimeout(()=>{
+                    create_secret_input.style.height = '0px';
+                    setTimeout(()=>{
+                    create_secret_input.style.width = '0px';
+                    create_secret_input.value = "";
+                    create_secret_input.placeholder = "";
+                    create_secret_input.style.backgroundColor = "rgba(255, 255, 255, 0.09)";
+                    create_secret_input.style.color = "rgba(255, 255, 255, 0.68)";
+                    create_secret_input.disabled = true;
+                },200)
+                },200)
+
+                setTimeout(()=>{
+                    continue_btn.style.width = "140px";
+                    continue_btn.style.height = "55px";
+                    continue_btn.style.fontSize = "14px";
+                    setTimeout(()=>{
+                        continue_btn.style.width = "0";
+                        continue_btn.style.height = "0";
+                        continue_btn.style.fontSize = "0px";
+
+                        setTimeout(()=>{
+                            continue_btn.innerHTML = "Generate Qeck";
+                            
+                            continue_btn.style.width = "140px";
+                            continue_btn.style.height = "55px";
+                            continue_btn.style.fontSize = "14px";
+                             setTimeout(()=>{
+                             continue_btn.style.width = "130px";
+                             continue_btn.style.height = "45px";
+                             continue_btn.style.fontSize = "12px";
+                             },300)
+                        },300)
+
+                        
+
+                        },300)
+                },200)
+                    
+                } else {
+                    if (existCount == 0) {
+                                    existCount++;
+                                    create_secret_input.style.width = '150px';
+                                    setTimeout(()=>{
+                                        create_secret_input.style.height = '45px';
+                                        document.getElementById('create-secret-input').value = '_' + Math.random().toString(36).substr(2, 9);
+                                        setTimeout(()=>{
+                                            create_secret_input.style.fontSize = '13px';
+
+                                            const link_copy_btn = document.createElement("button");
+                                            link_copy_btn.classList.add("continue-btn");
+                                            link_copy_btn.style.backgroundColor = "brown";
+                                            link_copy_btn.setAttribute("id", "link-copy-btn");
+                                            link_copy_btn.innerHTML = "copy";
+                                            qeck_options_wrapper.appendChild(link_copy_btn);
+
+                                            link_copy_btn.style.opacity = "1";
+                                            link_copy_btn.style.width = "60px";
+                                            link_copy_btn.style.height = "60px";
+                                            setTimeout(()=>{
+                                                link_copy_btn.style.width = "45px";
+                                                link_copy_btn.style.height = "45px";
+                                            },200)
+
+                                            link_copy_btn.onclick = ()=>{
+                                                const uniqCode_field = document.getElementById('create-secret-input');
+                                                uniqCode_field.select();
+                                                uniqCode_field.setSelectionRange(0, 99999);
+                                                navigator.clipboard.writeText(uniqCode_field.value.trim())
+
+                                                notif("Copied to clipboard", 1000);
+                                            }
+                                    },200)
+                                    },300)
+                                }else{
+                                   
+                                    const link_copy_btn = document.getElementById('link-copy-btn');
+                                    create_secret_input.style.width = '0px';
+                                    setTimeout(()=>{
+                                        document.getElementById('create-secret-input').value = '_' + Math.random().toString(36).substr(2, 9);
+                                        create_secret_input.style.width = '150px';
+
+                                            link_copy_btn.style.opacity = "1";
+                                            link_copy_btn.style.width = "60px";
+                                            link_copy_btn.style.height = "60px";
+                                            setTimeout(()=>{
+                                                link_copy_btn.style.width = "45px";
+                                                link_copy_btn.style.height = "45px";
+                                            },200)
+
+                                            link_copy_btn.onclick = ()=>{
+                                                const uniqCode_field = document.getElementById('create-secret-input');
+                                                uniqCode_field.select();
+                                                uniqCode_field.setSelectionRange(0, 99999);
+                                                navigator.clipboard.writeText(uniqCode_field.value.trim())
+
+                                                if (document.getElementById('notif')) {
+                                                    document.getElementById('notif-section').removeChild(document.getElementById('notif'));
+                                                }
+                                                    const notif = document.createElement("div");
+                                                notif.setAttribute("id", "notif");
+                                                notif.style.width = "100%";
+                                                notif.style.textAlign = "center";
+                                                notif.style.fontFamily = "monospace";
+                                                notif.style.fontWeight = "400";
+                                                notif.style.color = "black";
+                                                notif.style.paddingBlock = "10px";
+                                                notif.innerHTML = "Copied to clipboard";
+                                                document.getElementById('notif-section').appendChild(notif);
+                                                document.getElementById('notif-section').style.transform = "translateY(0%)";
+                                                setTimeout(()=>{
+                                                    document.getElementById('notif-section').style.transform = "translateY(-100%)";
+                                                }, 1000)
+                                                
+                                            }
+                                    },400)
+                                }
+
+                }
+                
+            }
+}
+    }
+    })
+
+    
+}
+
+
+
+
+function publicAction(){
+    
+    redirect();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function redirect(){
+    const cover = document.getElementById("cover");
+    cover.style.backgroundColor = "white";
+    cover.style.margin = "0";
+    cover.style.transform = "translateY(40%)";
+    cover.style.width = "100%";
+    cover.style.height = "200%";
+
+    setTimeout(()=>{
+        cover.style.transform = "translateY(-20%)";
+        setTimeout(()=>{
+        document.getElementById("hi-text").style.display = "none";
+        document.getElementById("enter-text").style.display = "none";
+        document.getElementById("app-icon").style.display = "none";
+        document.getElementById("h").style.display = "none";
+        document.getElementById("username-input").style.display = "none";
+        document.getElementById("qeck-options-wrapper").style.display = "none";
+        document.getElementById("proceed-section").style.display = "none";
+
+        setTimeout(()=>{
+            const chat_frame = document.createElement("iframe");
+            chat_frame.frameBorder = "0";
+            chat_frame.src = `/qeck/join/${username}&${secret}&${join_link}`;
+            chat_frame.width = "100%";
+            chat_frame.height = "100%";
+            chat_frame.style.margin = "-50px auto";
+            app_body.appendChild(chat_frame)
+            setTimeout(()=>{
+                cover.style.opacity = 0;
+                setTimeout(()=>{
+                cover.style.display = "none";
+                app_body.style.borderLeft = "none";
+            },300)
+            },100)
+        },100)
+        },400)
+
+
+    },100)
+}
+
+
+
+
+
+
+
+
+
+
+
+function isNullOrWhiteSpace(str) {
+  return (!str || str.length === 0 || /^\s*$/.test(str))
+}
+
+
+
+
+function notif(msg, time){
+    if (document.getElementById('notif')) {
+                                                    document.getElementById('notif-section').removeChild(document.getElementById('notif'));
+                                                } 
+                                                    const notif = document.createElement("div");
+                                                notif.setAttribute("id", "notif");
+                                                notif.style.width = "100%";
+                                                notif.style.textAlign = "center";
+                                                notif.style.fontFamily = "monospace";
+                                                notif.style.fontWeight = "400";
+                                                notif.style.color = "black";
+                                                notif.style.paddingBlock = "10px";
+                                                notif.innerHTML = msg;
+                                                document.getElementById('notif-section').appendChild(notif);
+                                                document.getElementById('notif-section').style.transform = "translateY(0%)";
+                                                setTimeout(()=>{
+                                                    document.getElementById('notif-section').style.transform = "translateY(-100%)";
+                                                }, time)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
